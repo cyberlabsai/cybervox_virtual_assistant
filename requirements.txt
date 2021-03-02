@@ -1,0 +1,13 @@
+pyaudio
+requests
+websockets
+uvloop
+wave
+asyncio
+numpy
+wheel
+environs
+scipy
+preprocess
+difflib
+jinja2
