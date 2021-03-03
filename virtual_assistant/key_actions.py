@@ -10,8 +10,9 @@ def send(action):
         logger.info('Send action')
         headers = {'content-type': 'application/json'}
         response = requests.request(action['method'], action['url'], headers=headers)
-        if response.status_code != 200:
+        if response.status_code != '200':
             logger.warning("Status code %i" % response.status_code)
+        print(response.body)
     except:
         logger.error("Ops! Error :/")
 def get():

@@ -31,11 +31,14 @@ def find_action(text):
     best_text_compare = [.0, None]
     for action in all_actions:
         ratio_compare = text_compare.compare(text, action['name'])
+        if config.assistant_name in text and 'pesquisar' in text:
+            text = text.split('pérola')[1]
+            return 'pesquisando', False
         if ratio_compare >= 0.70 and config.assistant_name in text:
             if best_text_compare[0] < ratio_compare:
                 best_text_compare[0] = ratio_compare
                 best_text_compare[1] = action
-    return best_text_compare[1]
+    return best_text_compare[1], True
 """
     Frames are a array of bytes.
 """
@@ -79,11 +82,12 @@ async def listening(stream, paudio, vox_conn):
                     finding action comparing action_name with vox_text
                 '''
                 if vox_response['success']:
-                    action = find_action(vox_response['text'])
-                    print('action', action)
+                    action, status = find_action(vox_response['text'])
+                    logger.info('Found some action? ' + str(action))
                     if action != None:
                         key_actions.send(action)
-
+                    else:
+                        logger.warning("Dont send action")
                 """
                     Restart all variables if some sound was found.
                 """
