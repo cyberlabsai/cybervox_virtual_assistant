@@ -9,14 +9,20 @@ import virtual_assistant.text_compare as text_compare
 import virtual_assistant.key_actions as key_actions
 from virtual_assistant.utils import log
 from virtual_assistant.utils import config
+from virtual_assistant.utils.download_media import download_media
+
+import pvporcupine
+import struct
 
 logger = log.logger
+
+handle = pvporcupine.create(keywords=['jarvis'])
 
 """
     Configs
 """
-RATE = 44100 # RATE / number of updates per second
-CHUNK = int(RATE/20)
+RATE = handle.sample_rate # RATE / number of updates per second
+CHUNK = handle.frame_length #int(RATE/20)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 frame_avg_filter = config.frame_avg_filter # The array bytes average with audio to filter
@@ -61,6 +67,9 @@ async def listening(stream, paudio, vox_conn):
 
     while True:
         data = stream.read(CHUNK)
+        
+        pcm = struct.unpack_from("h" * handle.frame_length, data)
+
         data_np = np.frombuffer(data, dtype=np.int16)
         peak = np.average(np.abs(data_np)) * 2
         filter = int(50 * peak/(2**16))
@@ -74,15 +83,24 @@ async def listening(stream, paudio, vox_conn):
                 bytes_frames = frames_to_binary_audio(frames, paudio)
                 upload_payload = await cybervox.upload(vox_conn, bytes_frames)
                 vox_response = await cybervox.stt(vox_conn, upload_payload['upload_id'])
-                
+
+                '''
+                    example TTS call
+                '''
+                # tts_response = await cybervox.tts(vox_conn, vox_response['text'])
+                # wav_url = f"https://api.cybervox.ai{tts_response['payload']['audio_url']}"
+                # wav_binary = download_media(wav_url)
+                # with open('teste.wav', 'wb') as f:
+                #     f.write(wav_binary)
+            
                 '''
                     finding action comparing action_name with vox_text
                 '''
-                if vox_response['success']:
-                    action = find_action(vox_response['text'])
-                    print('action', action)
-                    if action != None:
-                        key_actions.send(action)
+                # if vox_response['success']:
+                #     action = find_action(vox_response['text'])
+                #     print('action', action)
+                #     if action != None:
+                #         key_actions.send(action)
 
                 """
                     Restart all variables if some sound was found.
@@ -102,13 +120,14 @@ async def listening(stream, paudio, vox_conn):
         """
             Filter "voice"
         """
-        if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]) or could_record:
+        result = handle.process(pcm)
+        if result>=0 or could_record:
             if not started_timer:
                 logger.info('Not record. Start timer and recording...')
                 frames = []
                 started_timer = True
                 could_record = True
-                timer_start = threading.Timer(2.5, _none)
+                timer_start = threading.Timer(2.7, _none)
                 timer_start.setName('timer_start')
                 timer_start.start()
                 frames.append(data)
