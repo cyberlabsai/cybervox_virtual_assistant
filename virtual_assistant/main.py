@@ -96,11 +96,11 @@ async def listening(stream, paudio, vox_conn):
                 '''
                     finding action comparing action_name with vox_text
                 '''
-                # if vox_response['success']:
-                #     action = find_action(vox_response['text'])
-                #     print('action', action)
-                #     if action != None:
-                #         key_actions.send(action)
+                if vox_response['success']:
+                    action = find_action(vox_response['text'])
+                    print('action', action)
+                    if action != None:
+                        key_actions.send(action)
 
                 """
                     Restart all variables if some sound was found.
