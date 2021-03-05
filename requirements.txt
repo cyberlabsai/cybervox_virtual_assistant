@@ -9,6 +9,6 @@ wheel
 environs
 scipy
 preprocess
-difflib
 jinja2
 pvporcupine
+simpleaudio

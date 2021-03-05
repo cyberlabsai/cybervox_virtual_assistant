@@ -1,8 +1,10 @@
+# -- coding: utf-8 -- 
 import io
 import wave
 import threading
 import pyaudio
 import numpy as np
+import simpleaudio as sa
 
 import virtual_assistant.cybervox as cybervox
 import virtual_assistant.text_compare as text_compare
@@ -16,13 +18,15 @@ import struct
 
 logger = log.logger
 
-handle = pvporcupine.create(keywords=['jarvis'])
+# handle = pvporcupine.create(keywords=['jarvis'])
 
 """
     Configs
 """
-RATE = handle.sample_rate # RATE / number of updates per second
-CHUNK = handle.frame_length #int(RATE/20)
+# RATE = handle.sample_rate # RATE / number of updates per second
+# CHUNK = handle.frame_length #int(RATE/20)
+RATE = 44100
+CHUNK = int(RATE/20)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 frame_avg_filter = config.frame_avg_filter # The array bytes average with audio to filter
@@ -48,8 +52,9 @@ def find_action(text):
 """
     Frames are a array of bytes.
 """
-def frames_to_binary_audio(frames, paudio):
+def frames_to_binary_audio(frames, paudio, audio_out_type='input'):
     temp_file = io.BytesIO()
+
     with wave.open(temp_file, 'wb') as wf:
         wf.setnchannels(CHANNELS)
         wf.setsampwidth(paudio.get_sample_size(FORMAT))
@@ -57,8 +62,18 @@ def frames_to_binary_audio(frames, paudio):
         wf.writeframes(b''.join(frames))
 
     temp_file.seek(0)
+
+    if audio_out_type == 'output':
+        return temp_file
+
     binary_audio = temp_file.read()
     return binary_audio
+
+def play_audio(frames, pyaudio):
+    frames = frames_to_binary_audio([frames], pyaudio, 'output')
+    wave_obj = sa.WaveObject.from_wave_file(frames)
+    play_obj = wave_obj.play()
+    play_obj.wait_done()
 
 async def listening(stream, paudio, vox_conn):
     logger.info('Speak out!!!')
@@ -71,7 +86,7 @@ async def listening(stream, paudio, vox_conn):
     while True:
         data = stream.read(CHUNK)
         
-        pcm = struct.unpack_from("h" * handle.frame_length, data)
+        # pcm = struct.unpack_from("h" * handle.frame_length, data)
 
         data_np = np.frombuffer(data, dtype=np.int16)
         peak = np.average(np.abs(data_np)) * 2
@@ -84,28 +99,30 @@ async def listening(stream, paudio, vox_conn):
             if could_send:
                 logger.info('Aggregating wave bytes and send.')
                 bytes_frames = frames_to_binary_audio(frames, paudio)
+                logger.info('Upload to cybervox.')
                 upload_payload = await cybervox.upload(vox_conn, bytes_frames)
+                logger.info('Get uload_id.')
                 vox_response = await cybervox.stt(vox_conn, upload_payload['upload_id'])
-
-                '''
-                    example TTS call
-                '''
-                # tts_response = await cybervox.tts(vox_conn, vox_response['text'])
-                # wav_url = f"https://api.cybervox.ai{tts_response['payload']['audio_url']}"
-                # wav_binary = download_media(wav_url)
-                # with open('teste.wav', 'wb') as f:
-                #     f.write(wav_binary)
-            
-                '''
+                logger.info('Cybervox response.')
+                """
                     finding action comparing action_name with vox_text
-                '''
+                """
                 if vox_response['success']:
-                    action, status = find_action(vox_response['text'])
-                    logger.info('Found some action? ' + str(action))
+                    action = find_action(vox_response['text'])
+                    logger.info('Action', action)
                     if action != None:
                         key_actions.send(action)
-                    else:
-                        logger.warning("Dont send action")
+                        if action['staticPayload']['response']:
+                            text = action['staticPayload']['response']
+                            logger.info('')
+                            """
+                                TTS call
+                            """
+                            tts_response = await cybervox.tts(vox_conn, text)
+                            wav_url = f"{config.cybervox_url}{tts_response['payload']['audio_url']}"
+                            wav_binary = download_media(wav_url)
+                            play_audio(wav_binary, pyaudio)
+
                 """
                     Restart all variables if some sound was found.
                 """
@@ -124,8 +141,9 @@ async def listening(stream, paudio, vox_conn):
         """
             Filter "voice"
         """
-        result = handle.process(pcm)
-        if result>=0 or could_record:
+        # wake_up_word = handle.process(pcm)
+        # if (wake_up_word >=0 or could_record)
+        if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]) or could_record:
             if not started_timer:
                 logger.info('Not record. Start timer and recording...')
                 frames = []

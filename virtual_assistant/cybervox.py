@@ -15,11 +15,11 @@ def getAccessToken(clientID, clientSecret):
     request = {
         'client_id':     clientID,
         'client_secret': clientSecret,
-        'audience':      "https://api.cybervox.ai",
+        'audience':      f"{config.cybervox_url}",
         'grant_type':    "client_credentials"
     }
     logger.debug("fetching access token...")
-    response = requests.post("https://api.cybervox.ai/auth", json=request)
+    response = requests.post(f"{config.cybervox_url}/auth", json=request)
     if response.status_code != 200:
         return ""
     return response.json()['access_token']
@@ -59,7 +59,7 @@ async def tts(websocket, text):
     tts_response = await cybervox_tts.tts(websocket, text)
     tts_payload = tts_response['payload']
     delta = time.time() - tts_payload['timestamp']
-    logger.debug('    TTS: Round-trip: %9.2f ms, Success: %s, Reason: "%s", AudioURL: https://api.cybervox.ai%s',
+    logger.debug('    TTS: Round-trip: %9.2f ms, Success: %s, Reason: "%s", AudioURL:f {config.cybervox_url}%s',
                     delta * 1000.0,
                     tts_payload['success'],
                     tts_payload['reason'],

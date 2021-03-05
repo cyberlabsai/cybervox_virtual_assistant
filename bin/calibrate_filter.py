@@ -56,5 +56,6 @@ async def main():
     stream.close()
     paudio.terminate()
 
-uvloop.install()
-asyncio.run(main())
+if __name__=="__main__":
+    uvloop.install()
+    asyncio.run(main())

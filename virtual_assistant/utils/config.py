@@ -2,7 +2,7 @@ from environs import Env
 
 env = Env()
 env.read_env()
-
+cybervox_url = env("CYBERVOX_URL", "")
 client_id = env("CLIENT_ID", "")
 client_secret = env("CLIENT_SECRET", "")
 key_token = env("KEY_TOKEN", "")
