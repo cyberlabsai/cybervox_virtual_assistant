@@ -8,12 +8,17 @@ Pérola é o primeiro projeto Opensource brasileiro de assistente virtual. Ela a
 - [x] Ajuste no loop de voz. Não fechar o programa quando acabar uma frase.
 - [x] Comparação de texto para disparar uma ação.
 - [ ] Docker.
-- [ ] Interface para colocar texto e ação.
-- [ ] NLP.
 - [ ] Text to speech.
 - [ ] Testes.
 - [x] Integração com o KeyApp.
 - [x] Envio do binário ao Cybervox. Atualmente é um aiff convertido para wav, gambiarra :see_no_evil:.
+- [ ] NLP.
+- [ ] Rasperry test.
 
 #### Pode ajudar:
-https://github.com/amsehili/auditok
+- https://github.com/amsehili/auditok
+- knowledge graph
+- redes bayesianas
+- decision trees
+- https://core.ac.uk/download/pdf/230494941.pdf
+- https://blog.appsumo.com/ultimate-guide-to-chatbots-2020/#decision

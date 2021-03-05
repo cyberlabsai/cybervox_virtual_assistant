@@ -32,12 +32,12 @@ async def listening(stream, paudio):
         """
             Filter "voice"
         """
-        if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]):
-            """
-                Draw sound waves
-            """
-            bars = "=" * filter
-            print("%s - %s" % (filter, bars))
+        # if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]):
+        """
+            Draw sound waves
+        """
+        bars = "=" * filter
+        print("%s - %s" % (filter, bars))
 """
     Starting microphone and listening audio
 """
@@ -56,3 +56,6 @@ async def main():
     stream.close()
     paudio.terminate()
 
+if __name__=="__main__":
+    uvloop.install()
+    asyncio.run(main())
