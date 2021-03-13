@@ -52,7 +52,7 @@ def find_action(text):
 """
     Frames are a array of bytes.
 """
-def frames_to_binary_audio(frames, paudio, audio_out_type='input'):
+def frames_to_binary_audio_input(frames, paudio):
     temp_file = io.BytesIO()
 
     with wave.open(temp_file, 'wb') as wf:
@@ -63,15 +63,14 @@ def frames_to_binary_audio(frames, paudio, audio_out_type='input'):
 
     temp_file.seek(0)
 
-    if audio_out_type == 'output':
-        return temp_file
-
     binary_audio = temp_file.read()
     return binary_audio
 
-def play_audio(frames, pyaudio):
-    frames = frames_to_binary_audio([frames], pyaudio, 'output')
-    wave_obj = sa.WaveObject.from_wave_file(frames)
+def play_audio(wav_binary):
+    file = '_.wav'
+    with open(file, 'wb') as f:
+        f.write(wav_binary)
+    wave_obj = sa.WaveObject.from_wave_file(file)
     play_obj = wave_obj.play()
     play_obj.wait_done()
 
@@ -98,7 +97,7 @@ async def listening(stream, paudio, vox_conn):
         if (len(frames) > frame_avg_filter_size[0] and len(frames) < frame_avg_filter_size[1]):
             if could_send:
                 logger.info('Aggregating wave bytes and send.')
-                bytes_frames = frames_to_binary_audio(frames, paudio)
+                bytes_frames = frames_to_binary_audio_input(frames, paudio)
                 logger.info('Upload to cybervox.')
                 upload_payload = await cybervox.upload(vox_conn, bytes_frames)
                 logger.info('Get uload_id.')
@@ -108,20 +107,22 @@ async def listening(stream, paudio, vox_conn):
                     finding action comparing action_name with vox_text
                 """
                 if vox_response['success']:
+                    # First speak then send action.
                     action = find_action(vox_response['text'])
                     logger.info('Action', action)
                     if action != None:
-                        key_actions.send(action)
                         if action['staticPayload']['response']:
                             text = action['staticPayload']['response']
-                            logger.info('')
+                            logger.info('TTS: Speaking...')
                             """
                                 TTS call
                             """
                             tts_response = await cybervox.tts(vox_conn, text)
                             wav_url = f"{config.cybervox_url}{tts_response['payload']['audio_url']}"
                             wav_binary = download_media(wav_url)
-                            play_audio(wav_binary, pyaudio)
+                            play_audio(wav_binary)
+                        key_actions.send(action)
+                    
 
                 """
                     Restart all variables if some sound was found.

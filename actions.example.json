@@ -1,0 +1,11 @@
+{
+    "data": [
+        {
+            "name": "pérola, o que fazer...",
+            "url": "",
+            "method": "POST||GET",
+            "response": "O que responde pós ação",
+            "staticPayload": {}
+        }
+    ]
+}
