@@ -1,14 +1,5 @@
 import json 
-  
-f = open('actions.json',) 
-  
-data = json.load(f) 
 
-local_actions = [
-    {
-        "name": "",
-        "url": "",
-        "method": "",
-        "response": ""
-    }
-]
+file = open('actions.json', 'r')
+local_actions = json.load(file)
+local_actions = local_actions['data']

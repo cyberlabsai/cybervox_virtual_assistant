@@ -34,9 +34,9 @@ def get():
         logger.warning('Error on getPortals request.')
         logger.warning("Status code %i" % response.status_code)
         logger.warning(response.json())
-        return ''
+        return local_actions
     json = response.json()
     if json['data']['getPortals']['status']:
         logger.info('Portal found! Rerturning portal actions')
         return json['data']['getPortals']['portals'][0]['actions']
-    return ''
+    return local_actions
