@@ -1,11 +1,12 @@
 {
     "data": [
         {
-            "name": "pérola, o que fazer...",
-            "url": "",
-            "method": "POST||GET",
-            "response": "O que responde pós ação",
-            "staticPayload": {}
+            "name": "liga a luz do quarto",
+            "url": "http://0.0.0.0:8080/quarto",
+            "method": "POST",
+            "staticPayload": {
+                "response": "Folgado, vou ligar não... Brincadeira"
+            }
         }
     ]
 }

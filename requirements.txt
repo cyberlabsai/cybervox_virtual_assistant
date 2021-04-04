@@ -12,3 +12,4 @@ preprocess
 jinja2
 pvporcupine
 simpleaudio
+flask

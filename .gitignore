@@ -3,3 +3,5 @@ __pycache__
 venv
 *.wav
 actions.json
+precise-engine*
+.vscode
