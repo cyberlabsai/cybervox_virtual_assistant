@@ -18,18 +18,15 @@ import struct
 
 logger = log.logger
 
-# handle = pvporcupine.create(keywords=['jarvis'])
+handle = pvporcupine.create(keywords=['jarvis'])
 
 """
     Configs
 """
-# RATE = handle.sample_rate # RATE / number of updates per second
-# CHUNK = handle.frame_length #int(RATE/20)
-RATE = 44100
-CHUNK = int(RATE/20)
+RATE = handle.sample_rate # RATE / number of updates per second
+CHUNK = handle.frame_length #int(RATE/20)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-frame_avg_filter = config.frame_avg_filter # The array bytes average with audio to filter
 frame_avg_filter_size = config.frame_avg_filter_size # The array bytes len average with audio to send
 
 def _none():
@@ -41,10 +38,7 @@ def find_action(text):
     best_text_compare = [.0, None]
     for action in all_actions:
         ratio_compare = text_compare.compare(text, action['name'])
-        if config.assistant_name in text and 'pesquisar' in text:
-            text = text.split('pérola')[1]
-            return 'pesquisando', False
-        if ratio_compare >= 0.70 and config.assistant_name in text:
+        if ratio_compare >= 0.70:
             if best_text_compare[0] < ratio_compare:
                 best_text_compare[0] = ratio_compare
                 best_text_compare[1] = action
@@ -75,7 +69,7 @@ def play_audio(wav_binary):
     play_obj.wait_done()
 
 async def listening(stream, paudio, vox_conn):
-    logger.info('Speak out!!!')
+    logger.info('Speak "Jarvis" with strong Texas accent!!!')
     frames = []
     timer_start = None
     could_record = False
@@ -85,14 +79,14 @@ async def listening(stream, paudio, vox_conn):
     while True:
         data = stream.read(CHUNK)
         
-        # pcm = struct.unpack_from("h" * handle.frame_length, data)
+        pcm = struct.unpack_from("h" * handle.frame_length, data)
 
         data_np = np.frombuffer(data, dtype=np.int16)
         peak = np.average(np.abs(data_np)) * 2
         filter = int(50 * peak/(2**16))
 
         """
-            If frames size between FRAM_AVG_FILTER_SIZE write audio file and send to cybervox
+            If frames size between FRAM_AVG_FILTER_SIZE send to cybervox
         """
         if (len(frames) > frame_avg_filter_size[0] and len(frames) < frame_avg_filter_size[1]):
             if could_send:
@@ -104,13 +98,13 @@ async def listening(stream, paudio, vox_conn):
                 vox_response = await cybervox.stt(vox_conn, upload_payload['upload_id'])
                 logger.info('Cybervox response.')
                 """
-                    finding action comparing action_name with vox_text
+                    Finding action comparing action_name with vox_text
                 """
                 if vox_response['success']:
                     # First speak then send action.
                     action = find_action(vox_response['text'])
-                    logger.info('Action', action)
                     if action != None:
+                        logger.info('Action', action)
                         if action['staticPayload']['response']:
                             text = action['staticPayload']['response']
                             logger.info('TTS: Speaking...')
@@ -121,9 +115,7 @@ async def listening(stream, paudio, vox_conn):
                             wav_url = f"{config.cybervox_url}{tts_response['payload']['audio_url']}"
                             wav_binary = download_media(wav_url)
                             play_audio(wav_binary)
-                        key_actions.send(action)
-                    
-
+                            key_actions.send(action)
                 """
                     Restart all variables if some sound was found.
                 """
@@ -134,19 +126,12 @@ async def listening(stream, paudio, vox_conn):
                 could_send = False
 
         """
-            Draw sound waves
-        """
-        # bars = "=" * filter
-        # print("%s"%(bars))
-
-        """
             Filter "voice"
         """
-        # wake_up_word = handle.process(pcm)
-        # if (wake_up_word >=0 or could_record)
-        if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]) or could_record:
+        wake_up_word = handle.process(pcm)
+        if (wake_up_word >= 0 or could_record):
             if not started_timer:
-                logger.info('Not record. Start timer and recording...')
+                logger.info('Speech command! Start timer and recording...')
                 frames = []
                 started_timer = True
                 could_record = True
