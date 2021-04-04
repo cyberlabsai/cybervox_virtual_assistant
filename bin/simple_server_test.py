@@ -2,7 +2,7 @@ from flask import Flask, Response, request
 
 app = Flask(__name__)
 
-@app.route('/<data>', methods=['GET'])
+@app.route('/<data>', methods=['POST'])
 def server(data):
     print('From virtual assistant', data)
     return {}

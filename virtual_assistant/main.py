@@ -42,7 +42,7 @@ def find_action(text):
             if best_text_compare[0] < ratio_compare:
                 best_text_compare[0] = ratio_compare
                 best_text_compare[1] = action
-    return best_text_compare[1], True
+    return best_text_compare[1]
 """
     Frames are a array of bytes.
 """
