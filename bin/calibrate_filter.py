@@ -28,11 +28,6 @@ async def listening(stream, paudio):
         dataNp = np.fromstring(data, dtype=np.int16)
         peak = np.average(np.abs(dataNp)) * 2
         filter = int(50 * peak/(2**16))
-
-        """
-            Filter "voice"
-        """
-        # if (filter > frame_avg_filter[0] and filter < frame_avg_filter[1]):
         """
             Draw sound waves
         """
@@ -56,5 +51,6 @@ async def main():
     stream.close()
     paudio.terminate()
 
-uvloop.install()
-asyncio.run(main())
+if __name__=="__main__":
+    uvloop.install()
+    asyncio.run(main())
