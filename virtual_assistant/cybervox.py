@@ -5,6 +5,7 @@ import websockets
 
 import virtual_assistant.cybervox_ping as cybervox_ping
 import virtual_assistant.cybervox_stt as cybervox_stt
+import virtual_assistant.cybervox_tts as cybervox_tts
 from virtual_assistant.utils import log
 from virtual_assistant.utils import config
 
@@ -53,6 +54,17 @@ async def stt(websocket, uploadId):
                     stt_payload['text'])
     return stt_payload
 
+async def tts(websocket, text):
+    # --- TTS ---
+    tts_response = await cybervox_tts.tts(websocket, text)
+    tts_payload = tts_response['payload']
+    delta = time.time() - tts_payload['timestamp']
+    logger.debug('    TTS: Round-trip: %9.2f ms, Success: %s, Reason: "%s", AudioURL: https://api.cybervox.ai%s',
+                    delta * 1000.0,
+                    tts_payload['success'],
+                    tts_payload['reason'],
+                    tts_payload['audio_url'])
+    return tts_response
 
 async def conn():
     client_id = config.client_id
