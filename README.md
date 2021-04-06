@@ -1,19 +1,40 @@
 ### Cybervox Virtual Assistant
-Cyber é o primeiro projeto Opensource brasileiro de assistente virtual. Ela ainda é um bebê que está aprendendo a engatinhar. Contribua com o seu desenvolvimento.
+Cybervox Virtual Assistant é o primeiro projeto Opensource brasileiro de assistente virtual. Ela ainda é um bebê que está aprendendo a engatinhar. Contribua com o seu desenvolvimento.
 #### Config
 ##### Start
-Execute ``bin/setup.sh``
+Para configurar o projeto e baixar as dependências só executar o 
+``$ bin/setup.sh``
 ##### Edit enviroment and actions file
-Edite ``.env`` e ``actions.json`` para com suas configuração.
+Edite o ``.env`` com suas chaves do Cybervox.
+Para criar os comandos de voz edite o ``actions.json`` como o exemplo abaixo
+~~~json
+{
+    "data": [
+        {
+            "name": "liga a luz do quarto",
+            "url": "http://0.0.0.0:8080/quarto",
+            "method": "POST",
+            "staticPayload": {
+                "response": "Ligando a luz do quarto."
+            }
+        }
+    ]
+}
+~~~
+###### Com o [KeyApp](https://keyapp.ai/)
+As variáveis``KEY_TOKEN, KEY_PORTAL`` no ``.env`` são obrigatórios caso queira fazer integração com o [KeyApp](https://keyapp.ai/). Crie um portal e ações. O título das ações será o seu comando de voz.
 ##### Run
+Execute usando
 ```
-    python3 app.py
+$ python3 app.py
 ```
-##### Test
-Caso queira testar com algum Speech Command utilize ``python bin/simple_server_text.py``.
+E diga "Jarvis" para iniciar o comando descrito no seu ``actions.json``.
+##### Teste local
+Por padrão, o ```action.json``` já vem com uma ação de Speech Command. Caso queira testa-lo, utilize 
+``$ python3 bin/simple_server_text.py``
 #### To do
-- [ ] Ajuste detecção de voz.
-- [ ] Redução de ruído.
+- [x] Ajuste detecção de voz.
+- [ ] Redução de ruído (https://github.com/werman/noise-suppression-for-voice).
 - [x] Ajuste no loop de voz. Não fechar o programa quando acabar uma frase.
 - [x] Comparação de texto para disparar uma ação.
 - [ ] Docker.
@@ -22,18 +43,7 @@ Caso queira testar com algum Speech Command utilize ``python bin/simple_server_t
 - [x] Integração com o KeyApp.
 - [x] Envio do binário ao Cybervox. Atualmente é um aiff convertido para wav, gambiarra :see_no_evil:.
 - [ ] NLP.
-- [ ] Rasperry test.
-- [ ] Adicionar Cyber wake up.
-- [ ] Remover Jarvis como wake up word.
-- [ ] Testar em Windows.
-
-#### Pode ajudar:
-Algumas referências que podem ajudar na pesquisa.
-- https://github.com/amsehili/auditok
-- https://core.ac.uk/download/pdf/230494941.pdf
-- https://blog.appsumo.com/ultimate-guide-to-chatbots-2020/#decision
-- https://cloud.google.com/dialogflow/docs/
-- https://github.com/werman/noise-suppression-for-voice
-- knowledge graph
-- redes bayesianas
-- decision trees
+- [ ] Raspberry test.
+- [ ] Adicionar "Cyber" como wake up.
+- [ ] Remover "Jarvis" como wake up word.
+- [ ] Testar em um sistema Windows.
