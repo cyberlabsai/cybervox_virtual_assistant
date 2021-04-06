@@ -12,7 +12,6 @@ RATE = 44100
 CHUNK = int(RATE/20) # RATE / number of updates per second
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-frame_avg_filter = config.frame_avg_filter # The array bytes average with audio to filter
 frame_avg_filter_size = config.frame_avg_filter_size # The array bytes len average with audio to send
 
 """
