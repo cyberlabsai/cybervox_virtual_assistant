@@ -38,5 +38,6 @@ def get():
     json = response.json()
     if json['data']['getPortals']['status']:
         logger.info('Portal found! Rerturning portal actions')
+
         return json['data']['getPortals']['portals'][0]['actions']
     return local_actions
