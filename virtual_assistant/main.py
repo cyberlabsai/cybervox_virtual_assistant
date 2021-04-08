@@ -31,15 +31,17 @@ CHUNK = handle.frame_length #int(RATE/20)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 frame_avg_filter_size = config.frame_avg_filter_size # The array bytes len average with audio to send
+input_device_index = int(config.input_device_index)
 
 def _none():
     return
 
 def play_confirmation():
-    playsound("yea.wav")
+    playsound("audio/diga.wav")
 
 def play_tsc():
-    playsound("tsc.wav")
+    playsound("audio/desculpa_pode_repetir.wav")
+
 def find_action(text):
     all_actions = key_actions.get()
     logger.info('Finding action acording vox_text')
@@ -68,14 +70,8 @@ def frames_to_binary_audio_input(frames, paudio):
     binary_audio = temp_file.read()
     return binary_audio
 
-def play_audio(wav_binary):
-    # file = '_.wav'
-    # with open(file, 'wb') as f:
-    #     f.write(wav_binary)
-    # wave_obj = sa.WaveObject.from_wave_file('1.wav')
-    playsound(wav_binary)
-    # play_obj = wave_obj.play()
-    # play_obj.wait_done()
+def play_audio(file):
+    playsound(file)
 
 async def listening(stream, paudio, vox_conn):
     logger.info('Speak "Jarvis" with strong Texas accent!!!')
@@ -116,16 +112,19 @@ async def listening(stream, paudio, vox_conn):
                         logger.info('Action', action)
 
                         if action['staticPayload']['response']:
-                            text = action['staticPayload']['response']
+                            text = (action['staticPayload']['response']).lower()
                             logger.info('TTS: Speaking...')
                             """
                                 TTS call
                             """
                             is_cache = glob.glob("cache/{}.wav".format(text))
                             if len(is_cache) > 0:
+                                print("aq1")
                                 if text in glob.glob("cache/{}.wav".format(text))[0]:
+                                    print("aq2")
                                     file = '{}/{}.wav'.format("cache", text)
-                            else :
+                            else:
+                                print("aq3")
                                 tts_response = await cybervox.tts(vox_conn, text)
                                 wav_url = f"{config.cybervox_url}{tts_response['payload']['audio_url']}"
                                 wav_binary = download_media(wav_url)
@@ -152,17 +151,15 @@ async def listening(stream, paudio, vox_conn):
         """
         wake_up_word = handle.process(pcm)
         if wake_up_word >= 0:
-            print("WAKE :" ,wake_up_word)
             T = Thread(target=play_confirmation)  # create thread
             T.start()
         if (wake_up_word >= 0 or could_record):
             if not started_timer:
-                # playsound("yea.wav")
                 logger.info('Speech command! Start timer and recording...')
                 frames = []
                 started_timer = True
                 could_record = True
-                timer_start = threading.Timer(2.7, _none)
+                timer_start = threading.Timer(3, _none)
                 timer_start.setName('timer_start')
                 timer_start.start()
                 frames.append(data)
@@ -185,14 +182,9 @@ async def listening(stream, paudio, vox_conn):
 """
 def StreamPyAudio():
     paudio = pyaudio.PyAudio()
-    info = paudio.get_host_api_info_by_index(0)
-    numdevices = info.get('deviceCount')
-    for i in range(0, numdevices):
-        if (paudio.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-            print("Input Device id ", i, " - ", paudio.get_device_info_by_host_api_device_index(0, i).get('name'))
     stream = paudio.open(format=FORMAT,
                          channels=CHANNELS,
-                         input_device_index=18,
+                         input_device_index=input_device_index,
                          rate=RATE,
                          input=True,
                          frames_per_buffer=CHUNK)
