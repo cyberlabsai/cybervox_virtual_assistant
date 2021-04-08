@@ -23,6 +23,11 @@ Para criar os comandos de voz edite o ``actions.json`` como o exemplo abaixo
 ~~~
 ###### Com o [KeyApp](https://keyapp.ai/)
 As variáveis``KEY_TOKEN, KEY_PORTAL`` no ``.env`` são obrigatórios caso queira fazer integração com o [KeyApp](https://keyapp.ai/). Crie um portal e ações. O título das ações será o seu comando de voz.
+###### Escolhendo o device de audio
+Escolha o seu microfone ou device de audio e coloque no ``.env`` o ``INPUT_DEVICE_INDEX``.
+```
+$ python3 bin/list_device.py
+```
 ##### Run
 Execute usando
 ```

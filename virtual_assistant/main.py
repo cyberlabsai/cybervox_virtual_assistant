@@ -119,12 +119,9 @@ async def listening(stream, paudio, vox_conn):
                             """
                             is_cache = glob.glob("cache/{}.wav".format(text))
                             if len(is_cache) > 0:
-                                print("aq1")
                                 if text in glob.glob("cache/{}.wav".format(text))[0]:
-                                    print("aq2")
                                     file = '{}/{}.wav'.format("cache", text)
                             else:
-                                print("aq3")
                                 tts_response = await cybervox.tts(vox_conn, text)
                                 wav_url = f"{config.cybervox_url}{tts_response['payload']['audio_url']}"
                                 wav_binary = download_media(wav_url)
