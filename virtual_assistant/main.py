@@ -18,17 +18,16 @@ from virtual_assistant.utils.download_media import download_media
 import json
 
 import pvporcupine
-print(pvporcupine.KEYWORDS)
 import struct
 import time
 
 logger = log.logger
 
 handle = pvporcupine.create(keyword_paths=["hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn"])
-learing = {}
+commands_learning = {}
 with open("learning/dictionary.json") as file:
-    learing = json.load(file)
-print(learing)
+    commands_learning = json.load(file)
+
 """
     Configs
 """
@@ -49,10 +48,9 @@ def play_tsc():
     playsound("audio/desculpa_pode_repetir.wav")
 
 def find_action(text):
-    if text in learing:
-        print("TEXTO ENCONTRADO NO LEARNING FAZENDO DEPARA")
-        text = learing[text]
-        print("texto do comando : ", text)
+    if text in commands_learning:
+        logger.info('Finding action learning.json')
+        text = commands_learning[text]
     else:
         with open("commands.txt", 'a') as f:
             f.write(text)
@@ -124,7 +122,7 @@ async def listening(stream, paudio, vox_conn):
                         logger.info('Action', action)
 
                         if action['staticPayload']['response']:
-                            text = (action['staticPayload']['response']).lower()
+                            text = action['staticPayload']['response']
                             logger.info('TTS: Speaking...')
                             """
                                 TTS call
