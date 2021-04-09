@@ -7,6 +7,7 @@ import numpy as np
 from playsound import playsound
 from threading import Thread
 import glob
+import asyncio
 
 import virtual_assistant.cybervox as cybervox
 import virtual_assistant.text_compare as text_compare
@@ -14,15 +15,20 @@ import virtual_assistant.key_actions as key_actions
 from virtual_assistant.utils import log
 from virtual_assistant.utils import config
 from virtual_assistant.utils.download_media import download_media
+import json
 
 import pvporcupine
+print(pvporcupine.KEYWORDS)
 import struct
 import time
 
 logger = log.logger
 
-handle = pvporcupine.create(keywords=['jarvis'])
-
+handle = pvporcupine.create(keyword_paths=["hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn"])
+learing = {}
+with open("learning/dictionary.json") as file:
+    learing = json.load(file)
+print(learing)
 """
     Configs
 """
@@ -41,6 +47,14 @@ def play_confirmation():
 def play_tsc():
     playsound("tsc.wav")
 def find_action(text):
+    if text in learing:
+        print("TEXTO ENCONTRADO NO LEARNING FAZENDO DEPARA")
+        text = learing[text]
+        print("texto do comando : ", text)
+    else:
+        with open("commands.txt", 'a') as f:
+            f.write(text)
+            f.write("\n")
     all_actions = key_actions.get()
     logger.info('Finding action acording vox_text')
     best_text_compare = [.0, None]
@@ -84,12 +98,10 @@ async def listening(stream, paudio, vox_conn):
     could_record = False
     started_timer = False
     could_send = False
-
+    loop = asyncio.get_running_loop()
     while True:
-        data = stream.read(CHUNK)
-        
+        data = await loop.run_in_executor(None,stream.read,CHUNK)
         pcm = struct.unpack_from("h" * handle.frame_length, data)
-
         data_np = np.frombuffer(data, dtype=np.int16)
         peak = np.average(np.abs(data_np)) * 2
         filter = int(50 * peak/(2**16))
@@ -137,7 +149,7 @@ async def listening(stream, paudio, vox_conn):
                     else:
                         T = Thread(target=play_tsc)  # create thread
                         T.start()
-
+                logger.info('Speak "Jarvis" with strong Texas accent!!!')
                 """
                     Restart all variables if some sound was found.
                 """
