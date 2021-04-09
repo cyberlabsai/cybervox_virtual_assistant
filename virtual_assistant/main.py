@@ -23,7 +23,8 @@ import time
 
 logger = log.logger
 
-handle = pvporcupine.create(keyword_paths=["hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn"])
+handle = pvporcupine.create(keyword_paths=['hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn'])
+# handle = pvporcupine.create(keyword=['jarvis'])
 commands_learning = {}
 with open("learning/dictionary.json") as file:
     commands_learning = json.load(file)
