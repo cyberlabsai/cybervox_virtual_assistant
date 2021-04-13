@@ -5,7 +5,11 @@ Cybervox Virtual Assistant é o primeiro projeto Opensource brasileiro de assist
 Para configurar o projeto e baixar as dependências só executar o 
 ``$ bin/setup.sh``
 ##### Edit enviroment and actions file
-Edite o ``.env`` com suas chaves do Cybervox.
+Entre em contato conosco para obter as chaves do CyberVox.
+```
+Header de email: [Chaves de Acesso] Cybervox Virtual Assistant
+email: contato@cybervox.ai
+```
 Para criar os comandos de voz edite o ``actions.json`` como o exemplo abaixo
 ~~~json
 {
@@ -21,14 +25,20 @@ Para criar os comandos de voz edite o ``actions.json`` como o exemplo abaixo
     ]
 }
 ~~~
-###### Com o [KeyApp](https://keyapp.ai/)
-As variáveis``KEY_TOKEN, KEY_PORTAL`` no ``.env`` são obrigatórios caso queira fazer integração com o [KeyApp](https://keyapp.ai/). Crie um portal e ações. O título das ações será o seu comando de voz.
+###### Escolhendo o device de audio
+Escolha o seu microfone ou device de audio e coloque no ``.env`` o ``INPUT_DEVICE_INDEX``.
+```
+$ python3 bin/list_devices.py
+```
+Caso tenha alguma dúvida, utilize o que estiver com o `DEVICE_NAME: default`.
+###### Integrando ao [KeyApp](https://keyapp.ai/)
+Ainda estamos melhorando essa integração. Em breve será liberado uma nova versão.
 ##### Run
 Execute usando
 ```
 $ python3 app.py
 ```
-E diga "Jarvis" para iniciar o comando descrito no seu ``actions.json``.
+E diga "Hey Cyber, quem é você?" para um teste inicial.
 ##### Teste local
 Por padrão, o ```action.json``` já vem com uma ação de Speech Command. Caso queira testa-lo, utilize 
 ``$ python3 bin/simple_server_text.py``

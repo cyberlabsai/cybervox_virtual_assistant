@@ -1,7 +1,9 @@
 .env
 __pycache__
 venv
-*.wav
 actions.json
 precise-engine*
 .vscode
+cache/*
+commands.txt
+.ideia
