@@ -87,7 +87,7 @@ def play_audio(file):
     playsound(file)
 
 async def listening(stream, paudio, vox_conn):
-    logger.info('Speak "Jarvis" with strong Texas accent!!!')
+    logger.info('Speak "Hey Cyber"')
     frames = []
     timer_start = None
     could_record = False
@@ -140,11 +140,15 @@ async def listening(stream, paudio, vox_conn):
                                 with open(file, 'wb') as f:
                                     f.write(wav_binary)
                             play_audio(file)
-                            key_actions.send(action)
+                            if 'type' in action['staticPayload']:
+                                if action['staticPayload']['type'] != 'tts_only':
+                                    key_actions.send(action)
+                            else:
+                                key_actions.send(action)
                     else:
                         T = Thread(target=play_tsc)  # create thread
                         T.start()
-                logger.info('Speak "Jarvis" with strong Texas accent!!!')
+                logger.info('Speak "Hey Cyber"')
                 """
                     Restart all variables if some sound was found.
                 """

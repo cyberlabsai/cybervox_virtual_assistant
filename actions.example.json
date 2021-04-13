@@ -7,6 +7,15 @@
             "staticPayload": {
                 "response": "Folgado, vou ligar não... Brincadeira"
             }
+        },
+        {
+            "name": "quem é você?",
+            "url": "",
+            "method": "POST",
+            "staticPayload": {
+                "type": "tts_only",
+                "response": "Eu sou a Cyber. A assistente virtual da Cyberlabs. Ainda estou aprendendo alguns comandos."
+            }
         }
     ]
 }
