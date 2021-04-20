@@ -23,8 +23,14 @@ import time
 
 logger = log.logger
 
-handle = pvporcupine.create(keyword_paths=['hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn'])
-# handle = pvporcupine.create(keyword=['jarvis'])
+wake_up_words = ['jarvis', 'hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn']
+wake_up_word_name = wake_up_words[config.wake_up_word]
+
+if wake_up_word_name != 'hey_cyber_linux_2021-05-09-utc_v1_9_0.ppn':
+    handle = pvporcupine.create(keywords=[wake_up_word_name])
+else:
+    handle = pvporcupine.create(keyword_paths=[wake_up_word_name])
+
 commands_learning = {}
 with open("learning/dictionary.json") as file:
     commands_learning = json.load(file)
@@ -87,7 +93,7 @@ def play_audio(file):
     playsound(file)
 
 async def listening(stream, paudio, vox_conn):
-    logger.info('Speak "Hey Cyber"')
+    logger.info('Speak %s' % wake_up_word_name)
     frames = []
     timer_start = None
     could_record = False
@@ -148,7 +154,7 @@ async def listening(stream, paudio, vox_conn):
                     else:
                         T = Thread(target=play_tsc)  # create thread
                         T.start()
-                logger.info('Speak "Hey Cyber"')
+                logger.info('Speak %s' % wake_up_word_name)
                 """
                     Restart all variables if some sound was found.
                 """

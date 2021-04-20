@@ -14,7 +14,7 @@
             "method": "POST",
             "staticPayload": {
                 "type": "tts_only",
-                "response": "Eu sou a Cyber. A assistente virtual da Cyberlabs. Ainda estou aprendendo alguns comandos."
+                "response": "Eu sou a assistente virtual da Cyberlabs. Ainda estou aprendendo alguns comandos."
             }
         }
     ]
