@@ -31,6 +31,12 @@ Escolha o seu microfone ou device de audio e coloque no ``.env`` o ``INPUT_DEVIC
 $ python3 bin/list_devices.py
 ```
 Caso tenha alguma dúvida, utilize o que estiver com o `DEVICE_NAME: default`.
+###### Wake Up Word
+É possível utilizar dois Wake Up Words: "Hey Cyber" ou "Jarvis". No entanto, "Hey Cyber" é temporário.
+```
+# Jarvis = 0, Hey Cyber = 1
+WAKE_UP_WORD=0
+```
 ###### Integrando ao [KeyApp](https://keyapp.ai/)
 Ainda estamos melhorando essa integração. Em breve será liberado uma nova versão.
 ##### Run
@@ -52,8 +58,7 @@ Por padrão, o ```action.json``` já vem com uma ação de Speech Command. Caso 
 - [ ] Testes.
 - [x] Integração com o KeyApp.
 - [x] Envio do binário ao Cybervox. Atualmente é um aiff convertido para wav, gambiarra :see_no_evil:.
-- [ ] NLP.
 - [ ] Raspberry test.
-- [ ] Adicionar "Cyber" como wake up.
+- [x] Adicionar "Hey Cyber" como wake up.
 - [ ] Remover "Jarvis" como wake up word.
 - [ ] Testar em um sistema Windows.
